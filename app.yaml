@@ -11,7 +11,7 @@ name: sipras
 # packaged tree byte-identical to the local one there is no need for the
 # deploy's own re-upload; deploy just registers the new app version against
 # this identifier. Re-push + update this line after pulls/pushes of code.
-package: sha256:ccf1c57c1f46a8ddbfee8d9afef66ff3c44e942d4ca1a70fb9cd1dd773fb9911
+package: sha256:f004ca6d6512966b94df191a9d53c2f8cfaf7496f1fec1488d63ef0b24db33b0
 
 env:
   # Upload persistence (design D2): the public disk root points at the volume
