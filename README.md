@@ -1,5 +1,7 @@
 # SIPRAS — Sistem Informasi Pengaduan Sarana Sekolah
 
+[![Tests](https://github.com/varrver/sipras/actions/workflows/tests.yml/badge.svg)](https://github.com/varrver/sipras/actions/workflows/tests.yml)
+
 SIPRAS is a school facilities complaint platform (Helpdesk/Ticketing System) built with
 **Laravel 13**. Students report damaged school facilities with photo evidence; admins triage,
 track and resolve the reports through a transparent status workflow.
@@ -121,6 +123,24 @@ composer test        # config:clear + artisan test
 
 The full suite runs on in-memory SQLite — no MariaDB needed to run it. This README
 deliberately cites no test numbers: the count moves with the code, so trust the run itself.
+
+CI runs the same suite on every push to `main` and every pull request
+([`.github/workflows/tests.yml`](.github/workflows/tests.yml)), PHP 8.5 with in-memory SQLite.
+
+## Contributing
+
+Issues and pull requests are welcome — this is a school project, so small, focused
+changes are easiest to review. UI copy stays Indonesian, identifiers stay English,
+and new screens follow the tokens and components in [`DESIGN.md`](DESIGN.md).
+
+```bash
+composer install && npm install   # once
+composer test                     # suite on in-memory SQLite
+npm run build                     # required before the browser shows styling
+vendor/bin/pint                   # format before committing
+```
+
+`composer dev` runs the server, queue worker, log tail and Vite together while you work.
 
 ## Docs
 
