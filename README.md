@@ -4,6 +4,10 @@ SIPRAS is a school facilities complaint platform (Helpdesk/Ticketing System) bui
 **Laravel 13**. Students report damaged school facilities with photo evidence; admins triage,
 track and resolve the reports through a transparent status workflow.
 
+**Live demo:** <https://sipras.wasmer.app> — sign in with any account from
+[Demo Accounts](#demo-accounts) (`password`). The demo is seeded with sample data;
+feel free to file and triage complaints.
+
 > School project — SMK Negeri 5 Surakarta, Grade XII RPL.
 > Sub-theme: *Sistem Pengaduan Sarana Sekolah* (Project Guideline 2026/2027).
 
@@ -45,7 +49,9 @@ provisioned and forgotten passwords are reset by an admin at `/admin/master/user
 | Landing page | Siswa — complaint list |
 | --- | --- |
 | ![Landing page](docs/screenshots/01-login.png) | ![Siswa complaint list](docs/screenshots/03-siswa-list.png) |
-| **Admin — complaint triage** | **Admin — recap report** |
+
+| Admin — complaint triage | Admin — recap report |
+| --- | --- |
 | ![Admin complaint triage](docs/screenshots/07-admin-pengaduan.png) | ![Admin recap report](docs/screenshots/11-admin-report.png) |
 
 Every screen, both roles, is in [`docs/screenshots/`](docs/screenshots).
@@ -64,6 +70,10 @@ Every screen, both roles, is in [`docs/screenshots/`](docs/screenshots).
 Requirements: PHP ≥ 8.3 with `pdo_mysql`, `dom`, and `fileinfo` extensions, Composer, Node.js.
 
 ```bash
+# 0. Clone the repository
+git clone https://github.com/varrver/sipras.git
+cd sipras
+
 # 1. Install dependencies
 composer install
 npm install
