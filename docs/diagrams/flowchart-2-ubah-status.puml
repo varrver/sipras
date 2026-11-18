@@ -1,0 +1,47 @@
+@startuml
+scale 1.5
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 12
+
+start
+if (Aktor penangan?) then (Admin)
+  :Admin membuka detail pengaduan
+  /admin/pengaduan/{nomor tiket};
+else (Teknisi)
+  :Teknisi membuka detail aduan pada antrean
+  spesialisasinya /teknisi/pengaduan/{nomor tiket};
+endif
+
+:Petugas memilih status baru, mengisi catatan,
+dan melampirkan foto hasil perbaikan (jika Selesai);
+
+:Validasi aturan transisi status
+(UpdateComplaintStatusRequest & applyTransition);
+
+if (Validasi & aturan transisi lolos?) then (tidak)
+  :Tampilkan pesan kesalahan
+  (cth: Catatan wajib jika ditolak / Foto wajib jika selesai);
+  stop
+else (ya)
+  if (Status baru?) then (Selesai)
+    :Simpan foto bukti perbaikan ke
+    storage/complaints/resolved;
+    :Stempel waktu selesai (resolved_at);
+    :Kunci status final aduan;
+  elseif (Status baru?) then (Ditolak)
+    :Simpan catatan alasan penolakan
+    sebagai justifikasi wajib;
+    :Kunci status final aduan;
+  else (Dalam Proses)
+    :Set status "Dalam Proses"
+    (pengerjaan fisik dimulai);
+  endif
+
+  :Perbarui rekaman pengaduan di database;
+  :Perbarui linimasa pelacakan siswa;
+  :Kembali ke halaman detail dengan banner sukses;
+  stop
+endif
+@enduml

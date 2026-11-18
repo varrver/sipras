@@ -1,0 +1,41 @@
+@startuml
+scale 2
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 12
+
+start
+:Siswa membuka formulir
+/siswa/pengaduan/create;
+
+:Sistem menampilkan form dengan
+menu kustom in-page (x-select-menu)
+kategori dan 105 ruang sekolah;
+
+:Siswa memilih kategori & ruang,
+mengisi judul & deskripsi,
+serta mengunggah foto bukti;
+
+:Validasi data sisi server
+(StoreComplaintRequest);
+
+if (Data valid?) then (tidak)
+  :Tampilkan pesan error per kolom
+  (isian lama tetap tersimpan);
+  stop
+else (ya)
+  :Simpan berkas foto bukti fisik
+  ke storage/complaints/evidence;
+
+  :Generate nomor tiket unik otomatis
+  (TKT-YYYYMMDD-XXXX);
+
+  :Simpan rekaman pengaduan baru
+  dengan status awal "Menunggu";
+
+  :Tampilkan daftar pengaduan siswa
+  dengan notifikasi sukses & nomor tiket;
+  stop
+endif
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+scale 2
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 12
+
+start
+:Admin membuka halaman laporan
+/admin/pengaduan/laporan;
+
+:Admin memilih filter periode (?from, ?to),
+filter tipe kerusakan/kategori (?category),
+serta status dan kata kunci pencarian;
+
+:Sistem memvalidasi parameter secara aman via
+resolvePeriod() dan resolveCategory();
+
+:Sistem mengambil koleksi data pengaduan terfilter
+beserta relasi siswa, kategori, dan ruang;
+
+:Sistem menghitung ringkasan jumlah status
+yang sinkron dengan baris tabel;
+
+:Tampilkan halaman laporan rekapitulasi di web;
+
+if (Admin klik Cetak PDF?) then (ya)
+  :Render view mandiri reports/complaints
+  menggunakan paket barryvdh/laravel-dompdf
+  (format kertas A4 landscape);
+  :Kompilasi dan unduh berkas
+  laporan-pengaduan-{periode}-{kategori}-{waktu}.pdf;
+else (tidak)
+  :Admin membaca dan mencetak langsung
+  via dialog cetak browser (CSS print);
+endif
+stop
+@enduml

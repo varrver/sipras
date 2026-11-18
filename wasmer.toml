@@ -1,0 +1,33 @@
+# Wasmer package manifest for SIPRAS. Kept beside app.yaml; `wasmer deploy`
+# publishes this package (the whole repo) and runs the mapped command.
+#
+# Docs reference: https://docs.wasmer.io/edge/guides/laravel/
+
+# [package] identity parked for the deploy-window test: when the manifest
+# declares the same name the app.yaml binds, `wasmer deploy` bails with the
+# "deprecated deploy behaviour" error instead of accepting an explicit
+# package reference (deploy.rs warns then refuses in non-interactive mode).
+# Re-enable only when publishing named versions via `wasmer package publish`.
+# [package]
+# name = "varrver/sipras"
+version = "0.11.1"
+description = "SIPRAS - school facility complaint system for SMKN 5 Surakarta"
+private = true
+[dependencies]
+# Pinned PHP runtime =8.3.4 (matches composer.json ^8.3; probes verified
+# pdo_mysql/dom/mbstring/gd all present at this build).
+"php/php" = "=8.3.4"
+
+[fs]
+# The entire repository is mapped at /app inside the runtime.
+"/app" = "."
+
+[[command]]
+name = "run"
+module = "php/php:php"
+runner = "wasi"
+
+[command.annotations.wasi]
+# Laravel docroot: php -S serves /app/public.
+main-args = ["-t", "/app/public", "-S", "localhost:8080"]
+env = ["PHPRC=/app/config/"]

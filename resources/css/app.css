@@ -1,0 +1,320 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/forms";
+
+@theme {
+    /* Apple system font stack (no external font download) */
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    /* Monospace — ticket numbers only. SF Mono on Apple platforms, then
+       Cascadia (Windows 10+), before the generic menlo fallbacks. */
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+
+    /* ————————————————————————————————————————————
+       Apple (iOS) system palette.
+       Token names are kept M3-compatible so every blade
+       view (which references --color-* / bg-primary etc.)
+       keeps compiling untouched. Values are Apple system
+       colors from the iOS palette.
+       ———————————————————————————————————————————— */
+
+    /* Neutral surfaces — the grouped background and the white cells on it.
+       The app is flat, so every `surface-container-*` elevation step is white. */
+    --color-surface: #f2f2f7;                   /* systemGroupedBackground */
+    --color-surface-container-low: #ffffff;     /* white cells */
+    --color-surface-container: #ffffff;         /* cards / cells */
+    --color-surface-container-high: #ffffff;    /* hover cells */
+    --color-surface-container-highest: #ffffff;
+    --color-surface-zebra: #fafafa;             /* alternating rows — printed recap only */
+
+    /* Ink — the label colours that sit on those surfaces. */
+    --color-on-surface: #1c1c1e;                /* labelPrimary */
+    --color-on-surface-variant: #6e6e73;        /* secondary label (60% black) */
+
+    /* Apple action blue = primary actions / links. #0066CC is the blue Apple
+       itself ships for links on the web — the closest AA-passing relative of
+       the iOS system hue (systemBlue #007AFF is only 4.02:1 with white, which
+       fails the filled-button rule this repo enforces). #0066CC clears WCAG AA
+       in every state it appears: white label 5.56:1, text on #F2F2F7 4.99:1.
+       Error semantics moved OFF any blue: --color-error is a deep maroon, so
+       the Ditolak chip, .btn-error and validation messages still read as
+       danger, not branding; and the Dalam Proses chip left the blue family
+       (it collided with the action hue) for true systemIndigo #5856D6 — so
+       the "systemIndigo" label in these two files is now honest.
+       */
+    --color-primary: #0066cc;
+    --color-on-primary: #ffffff;
+    --color-primary-container: #e6eeff;         /* blue tint: selection wash, avatar, hovers */
+    --color-on-primary-container: #123e86;      /* deep navy on the tint (11.2:1) */
+
+    /* Neutral metadata fill — systemGray5. Carries category / room / role chips,
+       `.btn-secondary`, icon-button hover, the file-upload button and the mobile
+       active nav link. Metadata must not spend a status hue, so it is gray. */
+    --color-secondary-container: #e5e5ea;
+    --color-on-secondary-container: #656569;    /* 4.62:1 on the fill */
+
+    /* systemGreen = success ONLY — Selesai chip, resolved banner, success flash.
+       (Previously this was `primary-container`, which made a green tint answer to
+       the name "primary" and made every success message look like the primary action.) */
+    --color-success-container: #e7f9e9;
+    --color-on-success-container: #1e7b34;
+
+    /* Solid success — the timeline's completion node (a filled check for a
+       finished track; terminal-complete). Same ink as the container pair, so
+       white on top carries the icon at 5.33:1. */
+    --color-success: #1e7b34;
+    --color-on-success: #ffffff;
+
+    /* systemOrange = warning — Menunggu chip and pending banner, plus the two
+       caution surfaces (the create form's empty-master-data notice, the 403/419
+       error tiles). Freed up by making metadata neutral: orange stopped meaning
+       "category" and ".btn-secondary". */
+    --color-warning-container: #ffe9d6;
+    --color-on-warning-container: #a54a00;
+
+    /* systemIndigo = in-progress ONLY — Dalam Proses chip + callout.
+       True iOS systemIndigo (#5856D6) on its tint (#E8E8FD), 4.69:1 — leaves
+       the blue family free to mean "action" without a shared hue. The base
+       token gives the callout's 40% border (border-tertiary/40) real ink —
+       without it the class was a silent no-op (currentColor). */
+    --color-tertiary: #5856d6;
+    --color-tertiary-container: #e8e8fd;
+    --color-on-tertiary-container: #5856d6;
+
+    /* Error (Ditolak), destructive confirms, validation messages.
+       A deep maroon — deliberately NOT the blue primary (or any blue-leaning
+       hue), so a red button still reads as danger, not branding. Chosen for
+       headroom: 9.11:1 with white (btn-error) and as text on white. */
+    --color-error: #8b1d2c;
+    --color-on-error: #ffffff;
+    --color-error-container: #f7e4ea;           /* rosier tint — sits apart from the blue action wash */
+    --color-on-error-container: #6d0f26;        /* wine ink on the tint (9.9:1) */
+
+    /* Hairlines (systemGray4 / systemGray5). Deeper grays are expressed as
+       `*-container` fills, never as ad-hoc opacity. */
+    --color-outline: #c6c6c8;                   /* systemGray4 */
+    --color-outline-variant: #e5e5ea;           /* hairline separator */
+    --color-scrim: #000000;
+}
+
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+
+    body {
+        @apply bg-surface text-on-surface antialiased;
+    }
+
+    ::selection {
+        background-color: var(--color-primary-container);
+        color: var(--color-on-primary-container);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+        }
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--color-surface-container-highest);
+        border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-outline-variant);
+    }
+}
+
+@layer components {
+    /* The one cell surface: closed app pages and the public shells both wear it.
+       The hairline is part of the token (DESIGN.md §1) — it is what lets a white
+       cell on the grouped gray read as a cell rather than as a hole, and it is
+       the border the landing/login cells used to hand-roll before this class
+       carried it. Do not re-add `border border-outline-variant` per view. */
+    .card {
+        @apply rounded-2xl border border-outline-variant bg-surface-container;
+    }
+
+    .card-hover {
+        @apply transition-colors hover:bg-surface-container-high;
+    }
+
+    .field {
+        @apply block w-full rounded-lg border border-outline-variant bg-surface-container-low px-3.5 py-2.5 text-sm text-on-surface transition outline-none placeholder:text-on-surface-variant hover:border-outline focus:border-primary focus:ring-4 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    /* Native selects inherit the .field skin, but the form plugin's default
+       select chrome is not this world's: a generic chevron, a sub-44px box,
+       and platform arrows that disagree per OS. The chevron here is the same
+       drawn glyph the account dropdown's trigger uses (fill on-surface-variant,
+       #6e6e73), so every fling-down menu in the app points the same way;
+       min-h-11 honors the app's 44px touch floor on phones, where the
+       category/room/status selects are the teacher's flagged pain point. */
+    select.field {
+        @apply appearance-none min-h-11 pr-10;
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236e6e73'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.875rem center;
+        background-size: 1rem 1rem;
+    }
+
+    /* File pickers: the trigger is an authored capsule (same .btn-* family)
+         wrapping an sr-only input — the exposed native button printed the
+         browser's own English "Choose File", the only text the all-Indonesian
+         UI could not translate. Skin: the neutral .btn-secondary capsule with
+         a focus ring carried over from the field family via focus-within. */
+    .file-field {
+        @apply inline-flex w-fit max-w-full cursor-pointer select-none items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-semibold min-h-11 transition active:scale-[0.98];
+        @apply bg-secondary-container text-on-secondary-container hover:bg-secondary-container/80;
+        @apply focus-within:ring-4 focus-within:ring-primary/20;
+        @apply [&_svg]:shrink-0 [&_span]:truncate;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-outline,
+    .btn-error,
+    .btn-text {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold whitespace-nowrap min-h-11 transition select-none active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40;
+    }
+
+    .btn-primary {
+        @apply bg-primary text-on-primary hover:bg-primary/90;
+    }
+
+    .btn-secondary {
+        @apply bg-secondary-container text-on-secondary-container hover:bg-secondary-container/80;
+    }
+
+    .btn-outline {
+        @apply border border-outline bg-surface text-primary hover:bg-primary-container/40;
+    }
+
+    .btn-error {
+        @apply bg-error text-on-error hover:bg-error/90;
+    }
+
+    .btn-text {
+        @apply text-primary hover:bg-primary-container/40;
+    }
+
+    .chip {
+        @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+    }
+
+    .chip-filter {
+        @apply inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold; /* min-h-11: chips are the primary touch control everywhere they appear — the app's own 44px floor, not the 40px the old scale allowed */
+        @apply transition-colors select-none;
+    }
+}
+
+/* ————————————————————————————————————————————————————
+   No-JS hamburger (progressive enhancement).
+   Alpine only mirrors the hidden #nav-toggle
+   checkbox for ARIA + ESC, never drives the DOM:
+   these rules make the panel and trigger icons
+   work with scripts off entirely on CSS. Keyed
+   to the checkbox so it must be its direct
+   sibling chain (`~`), and locked under 640px
+   so a stuck-checked state can never leak the
+   panel onto a desktop layout.
+   Unlayered + !important outranks the x-cloak
+   base rule when checked, while closed stays
+   hidden by x-cloak with no script at all.
+   ———————————————————————————————————————————————————— */
+@media (max-width: 639.98px) {
+    #nav-toggle:checked ~ #responsive-menu > .menu-panel {
+        display: block !important;
+    }
+
+    #nav-toggle:checked ~ * .nav-icon-open {
+        display: none;
+    }
+
+    #nav-toggle:checked ~ * .nav-icon-close {
+        display: inline-flex;
+    }
+
+    #nav-toggle:focus-visible ~ * .nav-trigger-label {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+}
+
+/* ————————————————————————————————————————————————————
+   The admin drawer's no-JS leg — the same checkbox
+   technique, locked under the sidebar's own breakpoint.
+   Only visibility is enforced here: the header trigger,
+   the scrim and the close control are all labels for
+   #admin-nav-check, so a tap opens and closes the drawer
+   with no script at all. Alpine keeps the checkbox and
+   its `open` state in sync (ARIA, Escape, focus return);
+   where the two overlap, !important outranks the
+   pre-boot inline `display: none`, and a checked box is
+   never out of step with `open`, so the JS path is
+   unaffected.
+   ———————————————————————————————————————————————————— */
+@media (max-width: 1023.98px) {
+    #admin-nav-check:checked ~ #admin-drawer {
+        display: flex !important;
+    }
+
+    #admin-nav-check:checked ~ .admin-nav-backdrop {
+        display: block !important;
+    }
+
+    #admin-nav-check:focus-visible ~ header .admin-nav-trigger {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+}
+
+.page-heading-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.page-heading-row > .btn-primary,
+.page-heading-row > .btn-outline {
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .page-heading-row {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-heading-row > .btn-primary,
+    .page-heading-row > .btn-outline {
+        width: auto;
+    }
+}
+
+/* Sticky pinning of the detail-page action card stays banned
+   (DetailLayoutTest guards it): sticky travels its containing block (the
+   whole rail), so a pinned form slid over the Linimasa card below. */

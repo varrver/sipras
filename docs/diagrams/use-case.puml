@@ -1,0 +1,48 @@
+@startuml
+' Use case diagram SIPRAS (Gambar 3.1 in docs/laporan-proyek-sipras.docx)
+' Render with: python3 scripts/render_diagrams.py
+left to right direction
+scale 2
+skinparam monochrome true
+skinparam shadowing false
+
+actor "Siswa" as siswa
+actor "Admin" as admin
+actor "Teknisi" as teknisi
+
+rectangle "Sistem Informasi Pengaduan\nSarana Sekolah (SIPRAS)" {
+  usecase "Login" as UC1
+  usecase "Mengelola profil" as UC2
+  usecase "Melihat dashboard" as UC3
+  usecase "Membuat pengaduan" as UC4
+  usecase "Mengunggah foto bukti" as UC5
+  usecase "Melacak pengaduan\n(daftar, filter, pencarian,\nlinimasa)" as UC6
+  usecase "Mengelola data master\n(pengguna, kategori, ruang)" as UC7
+  usecase "Memperbarui status pengaduan\n(proses, selesai, tolak)" as UC8
+  usecase "Menolak pengaduan\n(alasan wajib diisi)" as UC9
+  usecase "Mendokumentasikan perbaikan\n(foto bukti wajib)" as UC10
+  usecase "Mencetak rekapitulasi\ndan ekspor PDF" as UC11
+}
+
+siswa --> UC1
+siswa --> UC2
+siswa --> UC3
+siswa --> UC4
+siswa --> UC6
+
+teknisi --> UC1
+teknisi --> UC2
+teknisi --> UC3
+teknisi --> UC8
+
+admin --> UC1
+admin --> UC2
+admin --> UC3
+admin --> UC7
+admin --> UC8
+admin --> UC11
+
+UC4 ..> UC5 : <<include>>
+UC9 ..> UC8 : <<extend>>
+UC10 ..> UC8 : <<extend>>
+@enduml

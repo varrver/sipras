@@ -1,0 +1,23 @@
+# Wasmer local-bundle exclusions (mirrors .gitignore where the package differs:
+# vendor/ and public/build/ are REQUIRED at runtime and must stay; everything
+# below is either a secret, a dev artifact, or replaced by an app.yaml volume).
+# storage/framework STAYS in the package: config/view.php does realpath() on
+# the compiled-views dir, which must exist at boot or Laravel 500s.
+# The oversized dev-only weight also ships out: /docs (24 MB floor-plan PDFs
+# the app never touches) and /vendor/{fakerphp,phpunit} (19 MB dev deps —
+# zero classmap references; PSR-4 lookups are silent). Keep the package small
+# enough that the deploy-time uploader finishes inside its hard 2 m window.
+.docs
+.env
+.env.*
+.git
+/node_modules
+.phpunit.cache
+/auth.json
+/public/hot
+/public/storage
+/storage/app
+/storage/logs
+# storage/pail
+/docs
+/vendor/phpunit

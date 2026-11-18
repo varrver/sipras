@@ -1,0 +1,69 @@
+# Wasmer Edge deployment for SIPRAS.
+# Deploy with `wasmer deploy` from this directory (PHP 8.3 runtime via wasmer.toml).
+#
+# WARNING: the `uploads` volume name is the storage identity — NEVER rename it
+# or change its mount; removing/renaming a volume deletes its data on deploy.
+kind: wasmer.io/App.v0
+owner: varrver
+name: sipras
+# Binds the app to the package release ALREADY uploaded via
+# `wasmer package push --timeout 30m` (hash = the current tree). With the
+# packaged tree byte-identical to the local one there is no need for the
+# deploy's own re-upload; deploy just registers the new app version against
+# this identifier. Re-push + update this line after pulls/pushes of code.
+package: sha256:ccf1c57c1f46a8ddbfee8d9afef66ff3c44e942d4ca1a70fb9cd1dd773fb9911
+
+env:
+  # Upload persistence (design D2): the public disk root points at the volume
+  # mount, a real directory under the docroot — no storage:link on the Edge.
+  PUBLIC_DISK_ROOT: /app/public/storage
+  # Edge MySQL is TLS-only with a private CA (plain verification impossible),
+  # so certificate verification is turned OFF while TLS itself stays on (D5).
+  MYSQL_ATTR_SSL_INSECURE: "1"
+  # Runtime env (no .env ships in the package — the bundle excludes it, so
+  # all runtime configuration arrives from here and from app secrets only).
+  APP_NAME: SIPRAS
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_URL: https://sipras.wasmer.app
+  APP_LOCALE: id
+  APP_FALLBACK_LOCALE: id
+  # The package filesystem is read-only; logs must stream to stderr
+  # (visible under `wasmer app logs`), not to files under storage/.
+  LOG_CHANNEL: stderr
+  LOG_LEVEL: warning
+  # DB_HOST/DB_PORT/DB_NAME/DB_USERNAME/DB_PASSWORD are injected by the
+  # database capability below (DB_DATABASE stays null there — the grant
+  # database must be named explicitly). DB_CONNECTION is NOT injected and
+  # Laravel's default is sqlite, so it must be explicit — sessions/cache/
+  # queues then default to `database` per config/, matching the drivers.
+  DB_CONNECTION: mysql
+  DB_DATABASE: db_2b0961fa
+
+# Managed MySQL auto-provisioned on first deploy; DB_HOST/DB_PORT/DB_NAME/
+# DB_USERNAME/DB_PASSWORD are injected (port is NOT 3306; never hardcode it).
+capabilities:
+  database:
+    engine: mysql
+  instaboot:
+    requests:
+      - path: /
+      - path: /up
+
+# Database only exists in certain regions; volume `uploads` is region-locked
+# too, so everything (app, DB, volume) pins one coherent region.
+locality:
+  regions:
+    - fr-roub1
+
+# Persistent evidence/proof images (design D2). The mount is the public disk
+# root (see PUBLIC_DISK_ROOT) — a real directory under the docroot, so /storage
+# paths are served straight from the volume and survive every redeploy.
+volumes:
+  - name: uploads
+    mount: /app/public/storage
+
+# php -S is single-request synchronous, so requests never share an instance.
+scaling:
+  mode: single_concurrency
+app_id: da_n73IatAUBkaY

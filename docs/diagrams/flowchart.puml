@@ -1,0 +1,63 @@
+@startuml
+' Flowchart alur kerja SIPRAS (Gambar 3.2 in docs/laporan-proyek-sipras.docx)
+' Render with: python3 scripts/render_diagrams.py
+scale 1.4
+skinparam monochrome true
+skinparam shadowing false
+
+|Siswa|
+start
+:Masukkan email dan password;
+if (Kredensial valid?) then (ya)
+else (tidak)
+  :Tampilkan pesan kesalahan;
+  stop
+endif
+
+if (Peran pengguna?) then (siswa)
+  :Buka formulir pengaduan;
+  repeat
+    :Isi kategori, ruang, judul,\ndeskripsi, unggah foto bukti;
+  backward :Tampilkan pesan validasi;
+  repeat while (Data valid?) is (tidak)
+  |Sistem|
+  :Simpan pengaduan dan buat\ntiket TKT-YYYYMMDD-XXXX;
+  :Set status Menunggu;
+elseif (teknisi) then (teknisi)
+  |Teknisi|
+  :Buka antrean kategori\nspesialisasi;
+  :Tinjau detail tiket;
+  switch (Tindakan?)
+  case (proses)
+    :Set status Dalam Proses;
+  case (selesai)
+    :Set status Selesai;
+    :Catat waktu selesai dan\nunggah foto bukti\n(wajib);
+  case (tolak)
+    :Isi alasan penolakan (wajib);
+    :Set status Ditolak;
+  endswitch
+else (admin)
+  |Admin|
+  :Tinjau antrean pengaduan;
+  switch (Tindakan?)
+  case (proses)
+    :Set status Dalam Proses;
+  case (selesai)
+    :Set status Selesai;
+    :Catat waktu selesai dan\nunggah foto bukti\n(wajib);
+  case (tolak)
+    :Isi alasan penolakan (wajib);
+    :Set status Ditolak;
+  endswitch
+  if (Perlu rekap laporan?) then (ya)
+    :Cetak rekapitulasi\ndan ekspor PDF;
+  else (tidak)
+  endif
+endif
+|Sistem|
+:Perubahan tersimpan dan\ntampil pada linimasa;
+|Siswa|
+:Melacak status pengaduan;
+stop
+@enduml
