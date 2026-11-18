@@ -58,12 +58,14 @@ Every screen, both roles, is in [`docs/screenshots/`](docs/screenshots).
 
 ## Demo Accounts
 
-| Role  | Email              | Password   |
-|-------|--------------------|------------|
-| Admin | `admin@sipras.test`| `password` |
-| Siswa | `budi@siswa.test`  | `password` |
-| Siswa | `siti@siswa.test`  | `password` |
-| Siswa | `andi@siswa.test`  | `password` |
+All four seeded accounts use the password `password`.
+
+| Role  | Email               |
+|-------|---------------------|
+| Admin | `admin@sipras.test` |
+| Siswa | `budi@siswa.test`   |
+| Siswa | `siti@siswa.test`   |
+| Siswa | `andi@siswa.test`   |
 
 ## Setup
 
